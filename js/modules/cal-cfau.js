@@ -192,6 +192,7 @@ class calCFAU extends HTMLElement {
 		this.shadow.querySelector("footer>.pdf").addEventListener("click", () => { window.print() });
 
 		this.setEvents();
+		this.restore();
 	}
 
 	changeAnnee(nb) {
@@ -333,11 +334,36 @@ class calCFAU extends HTMLElement {
 				e.classList.add("entreprise");
 			})
 		}
+
+		this.save();
 	}
 	removeClasses(e) {
 		e.classList.remove("entreprise");
 		e.classList.remove("examens");
 		e.classList.remove("universite");
+	}
+
+	save(){
+		let output = {};
+		this.shadow.querySelectorAll("[data-date]").forEach(jour=>{
+			output[jour.dataset.date] = {
+				matin: jour.querySelector(".matin").className,
+				txtMatin: jour.querySelector(".matin").innerText,
+				apresmidi: jour.querySelector(".apresmidi").className,
+				txtApresmidi: jour.querySelector(".apresmidi").innerText
+			}
+		})
+		localStorage.setItem("data", JSON.stringify(output))
+	}
+	restore(){
+		let data = JSON.parse(localStorage.getItem("data")) || {};
+		Object.entries(data).forEach(([txtJour, donnees])=>{
+			let jour = this.shadow.querySelector(`[data-date="${txtJour}"]`);
+			jour.querySelector(".matin").className = donnees.matin || "matin";
+			jour.querySelector(".matin").innerText = donnees.txtMatin || "";
+			jour.querySelector(".apresmidi").className = donnees.apresmidi || "apresmidi";
+			jour.querySelector(".apresmidi").innerText = donnees.txtApresmidi || "";
+		})
 	}
 }
 customElements.define('calendrier-cfau', calCFAU);
