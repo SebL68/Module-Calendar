@@ -97,7 +97,7 @@ class calCFAU extends HTMLElement {
                 }
                 .jour {
                     display: grid;
-                    grid-template-columns: 50px 1fr 1fr;
+                    grid-template-columns: 20px 50px 1fr 1fr;
                     cursor: pointer;
                     user-select: none;
                 }
@@ -122,6 +122,10 @@ class calCFAU extends HTMLElement {
                 .examens {
                     background: orange;
                 }
+				.semaine {
+					color: red;
+					cursor: auto;
+				}
 
                 footer {
                     display: flex;
@@ -129,6 +133,9 @@ class calCFAU extends HTMLElement {
                     gap: 4px;
                     padding-top: 4px;
                 }
+				footer>.totaux {
+					margin-right: auto;
+				}
                 button {
                     padding: 4px 16px;
                     border: none;
@@ -179,8 +186,9 @@ class calCFAU extends HTMLElement {
 				<div class=universite contenteditable=true>Centre de formation</div>
 				<div class=examens contenteditable=true>Examens</div>
             </nav>
-            <main>${this.vueCalendrier(this.annee)}</main>
+            <main>${this.vueCalendrier(this.annee)}</main>	
             <footer>
+				<div class=totaux></div>
                 <button class=pdf>Export PDF</button>
                 <button class=studea>Export vers STUDEA (à venir)</button>
             </footer>
@@ -218,6 +226,7 @@ class calCFAU extends HTMLElement {
 			}
 			output += `
                 <div class="jour ${classes}" data-date=${jour.toISOString().split("T")[0]}>
+					<div class=semaine>${(jour.getDay() == 1)?this.getWeekNumber(jour):""}</div>
                     <div class=txtJour>
                         ${this.txtJours[jour.getDay()]}
                         ${jour.getDate()}
@@ -242,8 +251,13 @@ class calCFAU extends HTMLElement {
 
 		/* Events */
 		this.changeJourHandler = (event) => { this.changeJour(event) }
-		this.shadow.querySelectorAll('.jour>div').forEach(e => {
+		//this.grabJourStartHandler = (event) => { this.grabJourStart(event) }
+
+		this.shadow.querySelectorAll('.jour>div:not(.semaine)').forEach(e => {
 			e.addEventListener("click", this.changeJourHandler);
+		})
+		this.shadow.querySelectorAll('.jour>.txtJour').forEach(e => {
+			e.addEventListener("mousedown", this.grabJourStartHandler);
 		})
 	}
 
@@ -305,6 +319,16 @@ class calCFAU extends HTMLElement {
 		})
 	}
 
+	getWeekNumber(date) {
+		const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+		// On se place au jeudi de la semaine courante (ISO standard)
+		d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+		const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+		const weekNumber = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+		
+		return weekNumber;
+	}
+
 	changeJour(event) {
 		if (event.currentTarget.classList.contains("txtJour")) {
 			var elements = [
@@ -334,13 +358,29 @@ class calCFAU extends HTMLElement {
 				e.classList.add("entreprise");
 			})
 		}
-
+		
+		this.totaux();
 		this.save();
 	}
 	removeClasses(e) {
 		e.classList.remove("entreprise");
 		e.classList.remove("examens");
 		e.classList.remove("universite");
+	}
+
+	grabStart(event) {
+
+	}
+
+	totaux() {
+		let entreprise = this.shadow.querySelectorAll(".jour>.entreprise").length;
+		let universite = this.shadow.querySelectorAll(".jour>.universite").length;
+		let examens = this.shadow.querySelectorAll(".jour>.examens").length;
+		this.shadow.querySelector(".totaux").innerHTML = `
+			${entreprise / 2} jour(s) en entreprise<br>
+			${universite / 2} jour(s) en centre de formation<br>
+			${examens / 2} jour(s) en examens
+		`;
 	}
 
 	save(){
@@ -364,6 +404,7 @@ class calCFAU extends HTMLElement {
 			jour.querySelector(".apresmidi").className = donnees.apresmidi || "apresmidi";
 			jour.querySelector(".apresmidi").innerText = donnees.txtApresmidi || "";
 		})
+		this.totaux();
 	}
 }
 customElements.define('calendrier-cfau', calCFAU);
