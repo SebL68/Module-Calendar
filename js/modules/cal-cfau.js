@@ -105,6 +105,21 @@ class calCFAU extends HTMLElement {
                     outline: 1px solid #777;
                     z-index: 1;
                 }
+				.jour svg {
+					position: absolute;
+					cursor: pointer;
+				}
+				.select {
+					background: rgba(10, 204, 0, 0.2);
+				}
+				.paste, .jour:not(.select)>.semaine>.paste.active+.copy {
+					pointer-events: none;
+					opacity: 0;
+				}
+				.jour:not(.select)>.semaine>.paste.active {
+					pointer-events: auto;
+					opacity: 1;
+				}
                 .WE {
                     background: #aaa;
                     pointer-events: none;
@@ -226,7 +241,10 @@ class calCFAU extends HTMLElement {
 			}
 			output += `
                 <div class="jour ${classes}" data-date=${jour.toISOString().split("T")[0]}>
-					<div class=semaine>${(jour.getDay() == 1)?this.getWeekNumber(jour):""}</div>
+					<div class=semaine>
+						${(jour.getDay() == 2)?this.getWeekNumber(jour):""}
+						${(jour.getDay() == 1)?'<svg xmlns="http://www.w3.org/2000/svg" title=Coller class=paste width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg><svg xmlns="http://www.w3.org/2000/svg" title=Copier class=copy width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>':""}
+					</div>
                     <div class=txtJour>
                         ${this.txtJours[jour.getDay()]}
                         ${jour.getDate()}
@@ -251,14 +269,12 @@ class calCFAU extends HTMLElement {
 
 		/* Events */
 		this.changeJourHandler = (event) => { this.changeJour(event) }
-		//this.grabJourStartHandler = (event) => { this.grabJourStart(event) }
+		this.copyHandler = (event) => { this.copy(event) }
+		this.pasteHandler = (event) => { this.paste(event) }
 
-		this.shadow.querySelectorAll('.jour>div:not(.semaine)').forEach(e => {
-			e.addEventListener("click", this.changeJourHandler);
-		})
-		this.shadow.querySelectorAll('.jour>.txtJour').forEach(e => {
-			e.addEventListener("mousedown", this.grabJourStartHandler);
-		})
+		this.shadow.querySelectorAll('.jour>div:not(.semaine)').forEach(e => { e.addEventListener("click", this.changeJourHandler)})
+		this.shadow.querySelectorAll('.jour .copy').forEach(e => { e.addEventListener("click", this.copyHandler)})
+		this.shadow.querySelectorAll('.jour .paste').forEach(e => { e.addEventListener("click", this.pasteHandler)})
 	}
 
 	joursFeries() {
@@ -368,8 +384,40 @@ class calCFAU extends HTMLElement {
 		e.classList.remove("universite");
 	}
 
-	grabStart(event) {
+	copy(event) {
+		let current = event.currentTarget.closest(".jour");
+		if(!current.classList.contains("select")) {
+			this.shadow.querySelectorAll(".select").forEach(e=>{e.classList.remove("select")})
+		}
+		for(let i=0;i<6;i++) {
+			current.classList.toggle("select");
+			if(current.nextElementSibling) {
+				current = current.nextElementSibling;
+			} else {
+				current = current.parentElement.nextElementSibling.querySelector(".jour");
+			}
+		}
+		if(this.shadow.querySelector(".select")) {
+			this.shadow.querySelectorAll(".paste").forEach(e=>e.classList.add("active"));
+		} else {
+			this.shadow.querySelectorAll(".paste").forEach(e=>e.classList.remove("active"));
+		}
+	}
 
+	paste(event) {
+		let selected = this.shadow.querySelectorAll(".select");
+		let current = event.currentTarget.closest(".jour");
+		for(let i=0;i<6;i++) {
+			current.querySelector(".matin").className = Array.from(selected)[i].querySelector(".matin").className;
+			current.querySelector(".apresmidi").className = Array.from(selected)[i].querySelector(".apresmidi").className;
+			if(current.nextElementSibling) {
+				current = current.nextElementSibling;
+			} else {
+				current = current.parentElement.nextElementSibling.querySelector(".jour");
+			}
+		}
+		this.totaux();
+		this.save();
 	}
 
 	totaux() {
