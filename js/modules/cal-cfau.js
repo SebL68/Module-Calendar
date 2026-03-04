@@ -47,6 +47,13 @@ class calCFAU extends HTMLElement {
                     display: block;
                     container-type: inline-size;
                 }
+				header {
+					background: #000;
+					color: #fff;
+					font-size: 24px;
+					padding: 4px 8px;
+					margin: 4px 0;
+				}
                 nav {
                    	font-family: Arial;
                     display: flex;
@@ -127,10 +134,10 @@ class calCFAU extends HTMLElement {
                 .ferie {
                     background: #ccc;
                 }
-                .entreprise {
+                .universite {
                     background: rgba(255, 251, 0, 1);
                 }
-                .universite {
+                .entreprise {
                     background: rgba(0, 172, 230, 1);
 					color: #fff;
                 }
@@ -192,6 +199,7 @@ class calCFAU extends HTMLElement {
 
 		/* Affichage calendrier */
 		this.shadow.innerHTML += `
+			<header contenteditable=true>Nom de la formation - cliquez pour modifier</header>
             <nav>
                 <div class=annee>${this.annee} - ${this.annee + 1}</div>
                 <button class=plus>+</button>
@@ -408,8 +416,11 @@ class calCFAU extends HTMLElement {
 		let selected = this.shadow.querySelectorAll(".select");
 		let current = event.currentTarget.closest(".jour");
 		for(let i=0;i<6;i++) {
-			current.querySelector(".matin").className = Array.from(selected)[i].querySelector(".matin").className;
-			current.querySelector(".apresmidi").className = Array.from(selected)[i].querySelector(".apresmidi").className;
+			if(!current.classList.contains("ferie")) {
+				current.querySelector(".matin").className = Array.from(selected)[i].querySelector(".matin").className;
+				current.querySelector(".apresmidi").className = Array.from(selected)[i].querySelector(".apresmidi").className;
+			}
+			
 			if(current.nextElementSibling) {
 				current = current.nextElementSibling;
 			} else {
