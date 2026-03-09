@@ -46,7 +46,34 @@ class calCFAU extends HTMLElement {
                 :host {
                     display: block;
                     container-type: inline-size;
+					position: relative;
                 }
+				.accueil{
+					font-family: verdana;
+					text-align: center;
+					position: absolute;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					z-index: 10;
+					background: #09c;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					gap: 20px;
+				}
+				.accueil>*{
+					background: #fff;
+					cursor: pointer;
+					padding: 16px 32px;
+					border-radius: 16px;
+					max-width: 220px;
+					font-size: 24px;
+				}
+				.accueil>*:hover{
+					box-shadow: 0 4px 4px 4px rgba(0,0,0,0.26);
+				}
 				header {
 					background: #000;
 					color: #fff;
@@ -199,6 +226,15 @@ class calCFAU extends HTMLElement {
 
 		/* Affichage calendrier */
 		this.shadow.innerHTML += `
+			<div class=accueil>
+				<div class=new>
+					Commencer un nouveau calendrier de formation
+				</div>
+				<label class=import>
+					Importer un fichier sauvegardé
+					<input type="file" id="fileInput" accept=".xlsx">
+				</label>
+			</div>
 			<header contenteditable=true>Nom de la formation - cliquez pour modifier</header>
             <nav>
                 <div class=annee>${this.annee} - ${this.annee + 1}</div>
@@ -217,11 +253,61 @@ class calCFAU extends HTMLElement {
             </footer>
         `;
 
-
+		this.shadow.querySelector(".accueil>.new").addEventListener("click", function(){this.parentElement.remove();});
 		this.shadow.querySelector("nav>.plus").addEventListener("click", () => this.changeAnnee(1));
 		this.shadow.querySelector("nav>.moins").addEventListener("click", () => this.changeAnnee(-1));
 		this.shadow.querySelector("footer>.pdf").addEventListener("click", () => { window.print() });
 		this.shadow.querySelector("footer>.studea").addEventListener("click", () => { this.exportSTUDEA() });
+		/*window.addEventListener("beforeunload", (event)=>{
+			 event.preventDefault();
+		});*/
+
+		this.shadow.querySelector("#fileInput").addEventListener("change", async (event) => {
+			const file = event.target.files[0];
+
+			if (!file) return;
+
+			const reader = new FileReader();
+
+			reader.onload = async (e)=>{
+				const data = e.target.result;
+
+				const workbook = await XlsxPopulate.fromDataAsync(data);
+
+				const sheet = workbook.sheet("Import");
+
+				this.shadow.querySelector("header").innerText = file.name.split(".").toSpliced(-1);
+				let ligne = 2;
+
+				while(sheet.cell("K"+ligne).value() !== undefined) {
+					if(sheet.cell("K"+ligne).value() === 0){
+						ligne++;
+						continue;
+					}
+					let date = sheet.cell("A"+ligne).value().split("/").reverse().join("-");
+					let creneau = sheet.cell("B"+ligne).value() == "8:00"?"matin":"apresmidi";
+					let type;
+					switch(sheet.cell("K"+ligne).value()){
+						case "Entreprise":
+							type = "entreprise";
+							break;
+						case "Centre":
+							type = "universite";
+							break;
+						case "Examens":
+							type = "examens";
+							break;
+					}
+					this.shadow.querySelector(`[data-date="${date}"]>.${creneau}`).classList.add(type)
+
+					ligne++;
+				}
+				this.totaux();
+				this.shadow.querySelector(".accueil").remove();
+			};
+
+			reader.readAsArrayBuffer(file);
+		});
 
 		this.setEvents();
 		this.restore();
@@ -444,7 +530,7 @@ class calCFAU extends HTMLElement {
 	}
 
 	save(){
-		let output = {};
+		/*let output = {};
 		this.shadow.querySelectorAll("[data-date]").forEach(jour=>{
 			output[jour.dataset.date] = {
 				matin: jour.querySelector(".matin").className,
@@ -453,10 +539,10 @@ class calCFAU extends HTMLElement {
 				txtApresmidi: jour.querySelector(".apresmidi").innerText
 			}
 		})
-		localStorage.setItem("data", JSON.stringify(output))
+		localStorage.setItem("data", JSON.stringify(output))*/
 	}
 	restore(){
-		let data = JSON.parse(localStorage.getItem("data")) || {};
+		/*let data = JSON.parse(localStorage.getItem("data")) || {};
 		Object.entries(data).forEach(([txtJour, donnees])=>{
 			let jour = this.shadow.querySelector(`[data-date="${txtJour}"]`);
 			jour.querySelector(".matin").className = donnees.matin || "matin";
@@ -464,7 +550,7 @@ class calCFAU extends HTMLElement {
 			jour.querySelector(".apresmidi").className = donnees.apresmidi || "apresmidi";
 			jour.querySelector(".apresmidi").innerText = donnees.txtApresmidi || "";
 		})
-		this.totaux();
+		this.totaux();*/
 	}
 
 	exportSTUDEA(){
