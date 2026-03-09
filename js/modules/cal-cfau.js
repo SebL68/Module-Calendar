@@ -205,15 +205,15 @@ class calCFAU extends HTMLElement {
                 <button class=plus>+</button>
                 <button class=moins>-</button>
 
-				<div class=entreprise contenteditable=true>Entreprise</div>
-				<div class=universite contenteditable=true>Centre de formation</div>
-				<div class=examens contenteditable=true>Examens</div>
+				<div class=entreprise>Entreprise</div>
+				<div class=universite>Centre de formation</div>
+				<div class=examens>Examens</div>
             </nav>
             <main>${this.vueCalendrier(this.annee)}</main>	
             <footer>
 				<div class=totaux></div>
                 <button class=pdf>Export PDF</button>
-                <button class=studea>Export vers STUDEA (à venir)</button>
+                <button class=studea>Export vers STUDEA</button>
             </footer>
         `;
 
@@ -221,6 +221,7 @@ class calCFAU extends HTMLElement {
 		this.shadow.querySelector("nav>.plus").addEventListener("click", () => this.changeAnnee(1));
 		this.shadow.querySelector("nav>.moins").addEventListener("click", () => this.changeAnnee(-1));
 		this.shadow.querySelector("footer>.pdf").addEventListener("click", () => { window.print() });
+		this.shadow.querySelector("footer>.studea").addEventListener("click", () => { this.exportSTUDEA() });
 
 		this.setEvents();
 		this.restore();
@@ -257,8 +258,8 @@ class calCFAU extends HTMLElement {
                         ${this.txtJours[jour.getDay()]}
                         ${jour.getDate()}
                     </div>
-                    <div class="matin" contenteditable=true></div>
-                    <div class="apresmidi" contenteditable=true></div>
+                    <div class="matin"></div>
+                    <div class="apresmidi"></div>
                 </div>`;
 
 			jour.setDate(jour.getDate() + 1);
@@ -465,5 +466,70 @@ class calCFAU extends HTMLElement {
 		})
 		this.totaux();
 	}
+
+	exportSTUDEA(){
+		XlsxPopulate.fromBlankAsync()
+            .then(workbook => {
+				const sheet = workbook.sheet(0);
+                sheet.name("Import");
+				sheet.range("A1:K1").value([[
+					"Date début", "Horaire début", "Horaire Fin", "Titre", "Periode", "Email Formateur", "Salle de cours", "Groupe", "Matière", "Apprenti", "activité"
+				]])
+
+				let ligne = 2;
+				this.shadow.querySelectorAll("main .entreprise, main .examens, main .universite").forEach(creneau=>{
+					let hDebut, hFin, type;
+					let date = creneau.closest(".jour").dataset.date.split("-").reverse().join("/");
+					
+					if(creneau.classList.contains("matin")) {
+						hDebut = "8:00";
+						hFin = "12:00";
+					} else {
+						hDebut = "14:00";
+						hFin = "17:00";
+					}
+					
+					if(creneau.classList.contains("entreprise")) {
+						type = "Entreprise";
+					} else if(creneau.classList.contains("examens")) {
+						type = "Examens";
+					} else {
+						type = "Centre";
+					}
+
+					sheet.range(`A${ligne}:K${ligne}`).value([
+						[
+							date, hDebut, hFin, "", "0", "", "", "", "", "", type
+						]
+					])
+
+					ligne++;
+				})
+
+				saveFile(this.shadow.querySelector("header").innerText, workbook);
+			})
+	}
 }
 customElements.define('calendrier-cfau', calCFAU);
+
+function getExcel(obj, xlsxName) {
+	return fetch(xlsxName)
+		.then(function (response) { return response.blob() })
+		.then(function (blob) {
+			return blob;
+		})
+}
+
+function saveFile(name, workbook) {
+	workbook.outputAsync()
+	.then(function (blob) {
+		var url = window.URL.createObjectURL(blob);
+		var a = document.createElement("a");
+		document.body.appendChild(a);
+		a.href = url;
+		a.download = name + ".xlsx";
+		a.click();
+		window.URL.revokeObjectURL(url);
+		document.body.removeChild(a);
+	});
+}
