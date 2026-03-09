@@ -235,8 +235,8 @@ class calCFAU extends HTMLElement {
 	}
 
 	vueCalendrier(annee) {
-		let debut = new Date(annee, 8, 1); // 1er septembre
-		let fin = new Date(annee + 1, 7, 31); // 31 aout année +1
+		let debut = new Date(annee, 8, 1, 12); // 1er septembre
+		let fin = new Date(annee + 1, 7, 31, 12); // 31 aout année +1
 		let jour = new Date(debut);
 
 		let output = "";
@@ -477,8 +477,8 @@ class calCFAU extends HTMLElement {
 				]])
 
 				let ligne = 2;
-				this.shadow.querySelectorAll("main .entreprise, main .examens, main .universite").forEach(creneau=>{
-					let hDebut, hFin, type;
+				this.shadow.querySelectorAll(".matin, .apresmidi").forEach(creneau=>{
+					let hDebut, hFin, type, periode;
 					let date = creneau.closest(".jour").dataset.date.split("-").reverse().join("/");
 					
 					if(creneau.classList.contains("matin")) {
@@ -491,15 +491,21 @@ class calCFAU extends HTMLElement {
 					
 					if(creneau.classList.contains("entreprise")) {
 						type = "Entreprise";
+						periode = 0;
 					} else if(creneau.classList.contains("examens")) {
 						type = "Examens";
-					} else {
+						periode = 1;
+					} else if(creneau.classList.contains("universite")){
 						type = "Centre";
+						periode = 1;
+					} else {
+						type = 0;
+						periode = "";
 					}
 
 					sheet.range(`A${ligne}:K${ligne}`).value([
 						[
-							date, hDebut, hFin, "", "0", "", "", "", "", "", type
+							date, hDebut, hFin, "", periode, "", "", "", "", "", type
 						]
 					])
 
