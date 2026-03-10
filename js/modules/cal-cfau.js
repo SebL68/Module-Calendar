@@ -256,7 +256,10 @@ class calCFAU extends HTMLElement {
 		this.shadow.querySelector(".accueil>.new").addEventListener("click", function(){this.parentElement.remove();});
 		this.shadow.querySelector("nav>.plus").addEventListener("click", () => this.changeAnnee(1));
 		this.shadow.querySelector("nav>.moins").addEventListener("click", () => this.changeAnnee(-1));
-		this.shadow.querySelector("footer>.pdf").addEventListener("click", () => { window.print() });
+		this.shadow.querySelector("footer>.pdf").addEventListener("click", () => { 
+			document.title = this.shadow.querySelector("header").innerText;
+			window.print();
+		});
 		this.shadow.querySelector("footer>.studea").addEventListener("click", () => { this.exportSTUDEA() });
 		/*window.addEventListener("beforeunload", (event)=>{
 			 event.preventDefault();
@@ -277,7 +280,7 @@ class calCFAU extends HTMLElement {
 				const sheet = workbook.sheet("Import");
 
 				this.shadow.querySelector("header").innerText = file.name.split(".").toSpliced(-1);
-				let ligne = 2;
+				let ligne = 3;
 
 				while(sheet.cell("K"+ligne).value() !== undefined) {
 					if(sheet.cell("K"+ligne).value() === 0){
@@ -562,8 +565,8 @@ class calCFAU extends HTMLElement {
 					"Date début", "Horaire début", "Horaire Fin", "Titre", "Periode", "Email Formateur", "Salle de cours", "Groupe", "Matière", "Apprenti", "activité"
 				]])
 
-				let ligne = 2;
-				this.shadow.querySelectorAll(".matin, .apresmidi").forEach(creneau=>{
+				let ligne = 3;
+				this.shadow.querySelectorAll(".jour>.entreprise, .jour>.examens, .jour>.universite").forEach(creneau=>{
 					let hDebut, hFin, type, periode;
 					let date = creneau.closest(".jour").dataset.date.split("-").reverse().join("/");
 					
