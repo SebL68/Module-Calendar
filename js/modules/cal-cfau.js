@@ -238,11 +238,13 @@ class calCFAU extends HTMLElement {
 		this.shadow.innerHTML += `
 			<div class=accueil>
 				<div class=new>
-					Commencer un nouveau calendrier de formation<hr>
 					<div class=dates>
 						<label onclick="event.stopPropagation()">Début <input type=date name=debut></label>
 						<label onclick="event.stopPropagation()">Fin <input type=date name=fin></label>
 					</div>
+					<hr>
+					Commencer un nouveau calendrier de formation
+					
 				</div>
 				<label class=import>
 					Importer un fichier sauvegardé<hr>
@@ -267,14 +269,16 @@ class calCFAU extends HTMLElement {
             </footer>
         `;
 		
-		/* Date pour nouvelle formation */
+		/* Date par défaut pour nouvelle formation */
 		this.shadow.querySelector("input[name=debut]").value = this.debut.toISOString().split('T')[0];
 		this.shadow.querySelector("input[name=fin]").value = this.fin.toISOString().split('T')[0];
 
 		/* Event */
 		this.shadow.querySelector(".accueil>.new").addEventListener("click", (event)=>{
-			this.debut = new Date(this.shadow.querySelector("input[name=debut]").value);
-			this.fin = new Date(this.shadow.querySelector("input[name=fin]").value);
+			let debut = new Date(this.shadow.querySelector("input[name=debut]").value);
+			let fin = new Date(this.shadow.querySelector("input[name=fin]").value);
+			this.debut = new Date(Date.UTC(debut.getUTCFullYear(), debut.getUTCMonth(), 1));
+			this.fin = new Date(Date.UTC(fin.getUTCFullYear(), fin.getUTCMonth()+1, 0));
 			this.shadow.querySelector("main").innerHTML = this.vueCalendrier(this.annee);
 			this.setEvents();
 			this.shadow.querySelector("main").style.setProperty("--nb-colonnes", this.shadow.querySelector("main").children.length);
