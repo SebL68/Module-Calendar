@@ -33,12 +33,13 @@ class calCFAU extends HTMLElement {
 
 
 		/* Année Scolaire courante */
-		let d = new Date();
+		/*let d = new Date();
 		if (d.getMonth() < 8) { // Septembre
 			this.annee = d.getFullYear() - 1;
 		} else {
 			this.annee = d.getFullYear();
-		}
+		}*/
+		this.annee = 2026;
 
 		/* Style */
 		this.shadow.innerHTML = `
@@ -79,13 +80,13 @@ class calCFAU extends HTMLElement {
 					color: #fff;
 					font-size: 24px;
 					padding: 4px 8px;
-					margin: 4px 0;
+					margin: 0 0 4px 0;
 				}
                 nav {
                    	font-family: Arial;
                     display: flex;
                     gap: 4px;
-                    margin-bottom: 4px;
+                    margin: 0 8px 4px 8px;
                     container-type: inline-size;
                     container-name: module;
 					.annee {
@@ -108,6 +109,7 @@ class calCFAU extends HTMLElement {
                     gap: 1px;
                     background: #ddd;
                     padding: 1px;
+					margin: 0 8px;
                 }
 
                 @container (width < 1200px) {
@@ -181,6 +183,7 @@ class calCFAU extends HTMLElement {
                     justify-content: flex-end;
                     gap: 4px;
                     padding-top: 4px;
+					margin-right: 8px;
                 }
 				footer>.totaux {
 					margin-right: auto;
@@ -237,9 +240,9 @@ class calCFAU extends HTMLElement {
 			</div>
 			<header contenteditable=true>Nom de la formation - cliquez pour modifier</header>
             <nav>
-                <div class=annee>${this.annee} - ${this.annee + 1}</div>
-                <button class=plus>+</button>
-                <button class=moins>-</button>
+                <div class=annee>${this.annee} - ${this.annee+1}</div>
+                <!--<button class=plus>+</button>
+                <button class=moins>-</button>-->
 
 				<div class=entreprise>Entreprise</div>
 				<div class=universite>Centre de formation</div>
@@ -254,8 +257,8 @@ class calCFAU extends HTMLElement {
         `;
 
 		this.shadow.querySelector(".accueil>.new").addEventListener("click", function(){this.parentElement.remove();});
-		this.shadow.querySelector("nav>.plus").addEventListener("click", () => this.changeAnnee(1));
-		this.shadow.querySelector("nav>.moins").addEventListener("click", () => this.changeAnnee(-1));
+		/*this.shadow.querySelector("nav>.plus").addEventListener("click", () => this.changeAnnee(1));
+		this.shadow.querySelector("nav>.moins").addEventListener("click", () => this.changeAnnee(-1));*/
 		this.shadow.querySelector("footer>.pdf").addEventListener("click", () => { 
 			document.title = this.shadow.querySelector("header").innerText;
 			window.print();
@@ -324,8 +327,8 @@ class calCFAU extends HTMLElement {
 	}
 
 	vueCalendrier(annee) {
-		let debut = new Date(annee, 8, 1, 12); // 1er septembre
-		let fin = new Date(annee + 1, 7, 31, 12); // 31 aout année +1
+		let debut = new Date(Date.UTC(annee, 8, 1)); // 1er septembre
+		let fin = new Date(Date.UTC(annee + 1, 7, 31)); // 31 aout année +1
 		let jour = new Date(debut);
 
 		let output = "";
@@ -407,21 +410,21 @@ class calCFAU extends HTMLElement {
 
 		const year = this.annee;
 		let fetes = {
-			Armistice: new Date(year, 10, 11),
-			Ascension: addDays(paques(year + 1), 39),
-			Assomption: new Date(year + 1, 7, 15),
-			"Fête Nationale": new Date(year + 1, 6, 14),
-			"Fête du travail": new Date(year + 1, 4, 1),
-			"Jour de l'an": new Date(year + 1, 0, 1),
-			"Lundi de Pentecôte": addDays(paques(year + 1), 50),
-			"Lundi de Pâques": addDays(paques(year + 1), 1),
-			Noël: new Date(year, 11, 25),
-			Toussaint: new Date(year, 10, 1),
-			"Victoire des alliés": new Date(year + 1, 4, 8)
+			Armistice: new Date(year, 10, 11, 12),
+			Ascension: addDays(paques(year + 1), 39 + 1),
+			Assomption: new Date(year + 1, 7, 15, 12),
+			"Fête Nationale": new Date(year + 1, 6, 14, 12),
+			"Fête du travail": new Date(year + 1, 4, 1, 12),
+			"Jour de l'an": new Date(year + 1, 0, 1, 12),
+			"Lundi de Pentecôte": addDays(paques(year + 1), 50 + 1),
+			"Lundi de Pâques": addDays(paques(year + 1), 1 + 1),
+			Noël: new Date(year, 11, 25, 12),
+			Toussaint: new Date(year, 10, 1, 12),
+			"Victoire des alliés": new Date(year + 1, 4, 8, 12)
 		}
 		const fetesAlsace = {
-			"Saint Étienne": new Date(year, 11, 26),
-			"Vendredi Saint": addDays(paques(year + 1), -2)
+			"Saint Étienne": new Date(year, 11, 26, 12),
+			"Vendredi Saint": addDays(paques(year + 1), -2 + 1)
 		}
 
 		if (this.zone == "alsace-moselle") {
