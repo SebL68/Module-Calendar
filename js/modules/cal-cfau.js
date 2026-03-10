@@ -40,6 +40,8 @@ class calCFAU extends HTMLElement {
 			this.annee = d.getFullYear();
 		}*/
 		this.annee = 2026;
+		this.debut = new Date(Date.UTC(this.annee, 8, 1)); // 1er septembre
+		this.fin = new Date(Date.UTC(this.annee + 1, 7, 31)); // 31 aout année +1
 
 		/* Style */
 		this.shadow.innerHTML = `
@@ -52,7 +54,7 @@ class calCFAU extends HTMLElement {
 				.accueil{
 					font-family: verdana;
 					text-align: center;
-					position: absolute;
+					position: fixed;
 					top: 0;
 					left: 0;
 					right: 0;
@@ -74,6 +76,11 @@ class calCFAU extends HTMLElement {
 				}
 				.accueil>*:hover{
 					box-shadow: 0 4px 4px 4px rgba(0,0,0,0.26);
+				}
+				.accueil>.new label {
+					font-size: 14px;
+					display: flex;
+					justify-content: space-between;
 				}
 				header {
 					background: #000;
@@ -105,7 +112,7 @@ class calCFAU extends HTMLElement {
 
                 main {
                     display: grid;
-                    grid-template-columns: repeat(12, 1fr);
+                    grid-template-columns: repeat(var(--nb-colonnes), 1fr);
                     gap: 1px;
                     background: #ddd;
                     padding: 1px;
@@ -231,10 +238,14 @@ class calCFAU extends HTMLElement {
 		this.shadow.innerHTML += `
 			<div class=accueil>
 				<div class=new>
-					Commencer un nouveau calendrier de formation
+					Commencer un nouveau calendrier de formation<hr>
+					<div class=dates>
+						<label onclick="event.stopPropagation()">Début <input type=date name=debut></label>
+						<label onclick="event.stopPropagation()">Fin <input type=date name=fin></label>
+					</div>
 				</div>
 				<label class=import>
-					Importer un fichier sauvegardé
+					Importer un fichier sauvegardé<hr>
 					<input type="file" id="fileInput" accept=".xlsx">
 				</label>
 			</div>
@@ -248,15 +259,27 @@ class calCFAU extends HTMLElement {
 				<div class=universite>Centre de formation</div>
 				<div class=examens>Examens</div>
             </nav>
-            <main>${this.vueCalendrier(this.annee)}</main>	
+            <main style="--nb-colonnes:12">${this.vueCalendrier()}</main>	
             <footer>
 				<div class=totaux></div>
                 <button class=pdf>Export PDF</button>
                 <button class=studea>Export vers STUDEA</button>
             </footer>
         `;
+		
+		/* Date pour nouvelle formation */
+		this.shadow.querySelector("input[name=debut]").value = this.debut.toISOString().split('T')[0];
+		this.shadow.querySelector("input[name=fin]").value = this.fin.toISOString().split('T')[0];
 
-		this.shadow.querySelector(".accueil>.new").addEventListener("click", function(){this.parentElement.remove();});
+		/* Event */
+		this.shadow.querySelector(".accueil>.new").addEventListener("click", (event)=>{
+			this.debut = new Date(this.shadow.querySelector("input[name=debut]").value);
+			this.fin = new Date(this.shadow.querySelector("input[name=fin]").value);
+			this.shadow.querySelector("main").innerHTML = this.vueCalendrier(this.annee);
+			this.setEvents();
+			this.shadow.querySelector("main").style.setProperty("--nb-colonnes", this.shadow.querySelector("main").children.length);
+			event.currentTarget.parentElement.remove();
+		});
 		/*this.shadow.querySelector("nav>.plus").addEventListener("click", () => this.changeAnnee(1));
 		this.shadow.querySelector("nav>.moins").addEventListener("click", () => this.changeAnnee(-1));*/
 		this.shadow.querySelector("footer>.pdf").addEventListener("click", () => { 
@@ -268,6 +291,7 @@ class calCFAU extends HTMLElement {
 			 event.preventDefault();
 		});*/
 
+		/* Import fichier */
 		this.shadow.querySelector("#fileInput").addEventListener("change", async (event) => {
 			const file = event.target.files[0];
 
@@ -281,6 +305,12 @@ class calCFAU extends HTMLElement {
 				const workbook = await XlsxPopulate.fromDataAsync(data);
 
 				const sheet = workbook.sheet("Import");
+
+				this.debut = new Date(sheet.cell("O1").value());
+				this.fin = new Date(sheet.cell("O2").value());
+				this.shadow.querySelector("main").innerHTML = this.vueCalendrier(this.annee);
+				this.setEvents();
+				this.shadow.querySelector("main").style.setProperty("--nb-colonnes", this.shadow.querySelector("main").children.length);
 
 				this.shadow.querySelector("header").innerText = file.name.split(".").toSpliced(-1);
 				let ligne = 3;
@@ -326,13 +356,13 @@ class calCFAU extends HTMLElement {
 		this.setEvents();
 	}
 
-	vueCalendrier(annee) {
-		let debut = new Date(Date.UTC(annee, 8, 1)); // 1er septembre
-		let fin = new Date(Date.UTC(annee + 1, 7, 31)); // 31 aout année +1
-		let jour = new Date(debut);
+	vueCalendrier() {
+		//let debut = new Date(Date.UTC(annee, 8, 1)); // 1er septembre
+		//let fin = new Date(Date.UTC(annee + 1, 7, 31)); // 31 aout année +1
+		let jour = new Date(this.debut);
 
 		let output = "";
-		while (jour.getTime() <= fin.getTime()) {
+		while (jour.getTime() <= this.fin.getTime()) {
 			if (jour.getDate() == 1) { // Nouveau mois
 				output += `<div><h2>${this.txtMois[jour.getMonth()]}</h2>`;
 			}
@@ -564,6 +594,8 @@ class calCFAU extends HTMLElement {
             .then(workbook => {
 				const sheet = workbook.sheet(0);
                 sheet.name("Import");
+				sheet.cell("O1").value(this.debut.toISOString().split("T")[0]);
+				sheet.cell("O2").value(this.fin.toISOString().split("T")[0]);
 				sheet.range("A1:K1").value([[
 					"Date début", "Horaire début", "Horaire Fin", "Titre", "Periode", "Email Formateur", "Salle de cours", "Groupe", "Matière", "Apprenti", "activité"
 				]])
