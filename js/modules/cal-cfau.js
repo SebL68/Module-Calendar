@@ -359,7 +359,7 @@ class calCFAU extends HTMLElement {
 				this.fin = new Date(Date.UTC(this.finApp.getUTCFullYear(), this.finApp.getUTCMonth()+1, 0));
 
 				this.shadow.querySelector("main").innerHTML = this.vueCalendrier(this.annee);
-				this.shadow.querySelector("nav>.dates").innerText = `Du ${this.debut.toISOString().split('T')[0].split("-").reverse().join("/")} au ${this.fin.toISOString().split('T')[0].split("-").reverse().join("/")}`;
+				this.shadow.querySelector("nav>.dates").innerText = `Du ${this.debutApp.toISOString().split('T')[0].split("-").reverse().join("/")} au ${this.finApp.toISOString().split('T')[0].split("-").reverse().join("/")}`;
 				this.setEvents();
 				this.shadow.querySelector("main").style.setProperty("--nb-colonnes", this.shadow.querySelector("main").children.length);
 
