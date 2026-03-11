@@ -128,7 +128,7 @@ class calCFAU extends HTMLElement {
 					margin: 0 8px;
                 }
 
-                @container (width < 1200px) {
+                @container (width < 1400px) {
                     main {
                         grid-template-columns: repeat(6, 1fr);
                     }
@@ -227,7 +227,7 @@ class calCFAU extends HTMLElement {
 						print-color-adjust: exact;
 					}
 					:host{
-						zoom: 80%;
+						zoom: 70%;
 					}
 					button {
 						display: none;
@@ -245,6 +245,9 @@ class calCFAU extends HTMLElement {
 					header, nav, main, footer{
 						margin-left: 0;
 						margin-right: 0;
+					}
+					.txtJour {
+						padding: 4px 0;
 					}
 				}
                 
