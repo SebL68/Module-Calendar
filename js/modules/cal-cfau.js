@@ -121,7 +121,7 @@ class calCFAU extends HTMLElement {
 
                 main {
                     display: grid;
-                    grid-template-columns: repeat(var(--nb-colonnes), 1fr);
+                    grid-template-columns: repeat(var(--nb-colonnes), minmax(0, 1fr));
                     gap: 1px;
                     background: #ddd;
                     padding: 1px;
