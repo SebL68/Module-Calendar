@@ -483,19 +483,25 @@ class calCFAU extends HTMLElement {
 		const year = this.annee;
 		let fetes = {
 			Armistice: new Date(year, 10, 11, 12),
+			Armistice2: new Date(year+1, 10, 11, 12),
 			Ascension: addDays(paques(year + 1), 39 + 1),
 			Assomption: new Date(year + 1, 7, 15, 12),
+			Assomption2: new Date(year, 7, 15, 12),
 			"Fête Nationale": new Date(year + 1, 6, 14, 12),
+			"Fête Nationale2": new Date(year, 6, 14, 12),
 			"Fête du travail": new Date(year + 1, 4, 1, 12),
 			"Jour de l'an": new Date(year + 1, 0, 1, 12),
 			"Lundi de Pentecôte": addDays(paques(year + 1), 50 + 1),
 			"Lundi de Pâques": addDays(paques(year + 1), 1 + 1),
 			Noël: new Date(year, 11, 25, 12),
+			Noël2: new Date(year+1, 11, 25, 12),
 			Toussaint: new Date(year, 10, 1, 12),
+			Toussaint2: new Date(year+1, 10, 1, 12),
 			"Victoire des alliés": new Date(year + 1, 4, 8, 12)
 		}
 		const fetesAlsace = {
 			"Saint Étienne": new Date(year, 11, 26, 12),
+			"Saint Étienne2": new Date(year+1, 11, 26, 12),
 			"Vendredi Saint": addDays(paques(year + 1), -2 + 1)
 		}
 
