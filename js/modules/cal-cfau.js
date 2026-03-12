@@ -263,6 +263,7 @@ class calCFAU extends HTMLElement {
 					transform-origin: 20px 20px;
 					opacity: 0;
 					transform: scale(0);
+					cursor: pointer;
 				}
 				.infos {
 					background: #FFF;
@@ -368,7 +369,7 @@ class calCFAU extends HTMLElement {
                 <button class=pdf>Export PDF</button>
                 <button class=studea>Sauvegarder</button>
             </footer>
-			<div class="fondNoir ouvrir">
+			<div class=fondNoir>
 				<div class="infos" contenteditable=true spellcheck=true>
 					<h2>Quel est cet outil ?</h2>
 					<p>Cet outil permet de créer et enregistrer vos calendriers d'apprentissage. Vous pouvez créer plusieurs calendriers pour vos différentes formations et les enregistrer sur votre ordinateur au format xlsx.</p>
