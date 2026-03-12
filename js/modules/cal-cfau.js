@@ -241,7 +241,7 @@ class calCFAU extends HTMLElement {
 					}
 					.jour{
 						font-size: 11px;
-						grid-template-columns: 12px 38px 1fr 1fr;
+						grid-template-columns: 12px 50px 1fr 1fr;
 					}
 					.copy{
 						display: none;
@@ -251,7 +251,8 @@ class calCFAU extends HTMLElement {
 						margin-right: 0;
 					}
 					.txtJour {
-						padding: 4px 0;
+						padding: 2px 0;
+						font-size:16px;
 					}
 				}
                 
