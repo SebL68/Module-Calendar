@@ -383,7 +383,7 @@ class calCFAU extends HTMLElement {
 							<li>Cliquez juste à coté pour modifier une demi journée.</li>
 							<li>Utilisez le symbole <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg><svg xmlns="http://www.w3.org/2000/svg" title=Copier class=copy width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> pour copier la semaine entière, vous pourrez la coller ailleurs.</li>
 							<li>Pensez à sauvegarder la formation pour pouvoir la rouvrir une autre fois.</li>
-							<li>En revenant sur l'outil, vous pourrez importer une formation précédemment sauvegardé</li>
+							<li>En revenant sur l'outil, vous pourrez importer une formation précédemment sauvegardée.</li>
 						<ul>
 					</p>
 				</div>
