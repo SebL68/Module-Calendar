@@ -258,6 +258,7 @@ class calCFAU extends HTMLElement {
 					bottom: 0;
 					display: flex;
 					justify-content: center;
+					align-items: center;
 					padding: 48px;
 					transition: 0.4s;
 					transform-origin: 20px 20px;
