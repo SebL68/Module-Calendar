@@ -371,7 +371,7 @@ class calCFAU extends HTMLElement {
                 <button class=studea>Sauvegarder</button>
             </footer>
 			<div class=fondNoir>
-				<div class="infos" contenteditable=true spellcheck=true>
+				<div class=infos>
 					<h2>Quel est cet outil ?</h2>
 					<p>Cet outil permet de créer et enregistrer vos calendriers d'apprentissage. Vous pouvez créer plusieurs calendriers pour vos différentes formations et les enregistrer sur votre ordinateur au format xlsx.</p>
 					<p>Nous vous recommandons de ne pas modifier le fichier xlsx sans passer par cet outil afin de ne pas corrompre les données.</p>
