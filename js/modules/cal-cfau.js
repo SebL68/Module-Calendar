@@ -42,6 +42,7 @@ class calCFAU extends HTMLElement {
 		this.annee = 2026;
 		this.debut = new Date(Date.UTC(this.annee, 8, 1)); // 1er septembre
 		this.fin = new Date(Date.UTC(this.annee + 1, 7, 31)); // 31 aout année +1
+		this.saved = true;
 
 		/* Style */
 		this.shadow.innerHTML = `
@@ -83,13 +84,36 @@ class calCFAU extends HTMLElement {
 					justify-content: space-between;
 				}
 				header {
-					margin: 0 178px 4px 0;
+					margin: 0 178px 4px 48px;
 				}
 				header>input {
 					font-size: 24px;
 					width: 100%;
 					border: none;
 					padding: 4px 8px;
+				}
+				header>.help {
+					position: absolute;
+					left: 6px;
+					top: 6px;
+					width: 40px;
+					height: 40px;
+					border-radius: 100%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					font-size: 24px;
+					background: #c09;
+					color: #fff;
+					cursor: pointer;
+					animation: zioumzioum 2s infinite;
+				}
+				@keyframes zioumzioum {
+					0%{rotate: 0}
+					10%{rotate: 20deg}
+					20%{rotate: -20deg}
+					30%{rotate: 20deg}
+					40%{rotate: 0deg}
 				}
                 nav {
                    	font-family: Arial;
@@ -225,6 +249,34 @@ class calCFAU extends HTMLElement {
                     outline: 1px solid #777;
                 }
 
+				.fondNoir {
+					background: rgba(0,0,0,0.8);
+					position: fixed;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					display: flex;
+					justify-content: center;
+					padding: 48px;
+					transition: 0.4s;
+					transform-origin: 20px 20px;
+					opacity: 0;
+					transform: scale(0);
+				}
+				.infos {
+					background: #FFF;
+					font-family: verdana;
+					padding: 24px 48px;
+					border-radius: 48px;
+					overflow: auto;
+					max-width: 800px;
+				}
+				.fondNoir.ouvrir{
+					opacity: 1;
+					transform: scale(1);
+				}
+
 				@media print {
 					* {
 						-webkit-print-color-adjust: exact;
@@ -233,7 +285,9 @@ class calCFAU extends HTMLElement {
 					:host{
 						zoom: 70%;
 					}
-					button {
+					button, 
+					header>.help,
+					fond-noir {
 						display: none;
 					}
 					h2{
@@ -245,6 +299,9 @@ class calCFAU extends HTMLElement {
 					}
 					.copy{
 						display: none;
+					}
+					header {
+						margin: 0 178px 4px 0;
 					}
 					header, nav, main, footer{
 						margin-left: 0;
@@ -288,7 +345,10 @@ class calCFAU extends HTMLElement {
 					<input type="file" id="fileInput" accept=".xlsx">
 				</label>
 			</div>
-			<header><input placeholder="Nom de la formation - cliquez pour modifier"></header>
+			<header>
+				<input placeholder="Nom de la formation - cliquez pour modifier">
+				<div class=help>?</div>
+			</header>
             <nav>
                 <div class=annee>${this.annee} - ${this.annee+1}</div>
                 <!--<button class=plus>+</button>
@@ -306,8 +366,27 @@ class calCFAU extends HTMLElement {
             <footer>
 				<div class=totaux></div>
                 <button class=pdf>Export PDF</button>
-                <button class=studea>Enregistrement Excel</button>
+                <button class=studea>Sauvegarder</button>
             </footer>
+			<div class="fondNoir ouvrir">
+				<div class="infos" contenteditable=true spellcheck=true>
+					<h2>Quel est cet outil ?</h2>
+					<p>Cet outil permet de créer et enregistrer vos calendriers d'apprentissage. Vous pouvez créer plusieurs calendriers pour vos différentes formations et les enregistrer sur votre ordinateur au format xlsx.</p>
+					<p>Nous vous recommandons de ne pas modifier le fichier xlsx sans passer par cet outil afin de ne pas corrompre les données.</p>
+
+					<h2>Etapes</h2>
+					<p>
+						<ul>
+							<li>Après avoir crée un nouveau calendrier, modifier le nom de la formation en haut de l'interface.</li>
+							<li>Cliquez sur le texte d'un jour pour modifier toute la journée.</li>
+							<li>Cliquez juste à coté pour modifier une demi journée.</li>
+							<li>Utilisez le symbole <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg><svg xmlns="http://www.w3.org/2000/svg" title=Copier class=copy width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> pour copier la semaine entière, vous pourrez la coller ailleurs.</li>
+							<li>Pensez à sauvegarder la formation pour pouvoir la rouvrir une autre fois.</li>
+							<li>En revenant sur l'outil, vous pourrez importer une formation précédemment sauvegardé</li>
+						<ul>
+					</p>
+				</div>
+			</div>
         `;
 		
 		/* Date par défaut pour nouvelle formation */
@@ -326,6 +405,8 @@ class calCFAU extends HTMLElement {
 			this.shadow.querySelector("main").style.setProperty("--nb-colonnes", this.shadow.querySelector("main").children.length);
 			event.currentTarget.parentElement.remove();
 		});
+		this.shadow.querySelector(".help").addEventListener("click", ()=>{this.shadow.querySelector(".fondNoir").classList.toggle("ouvrir")});
+		this.shadow.querySelector(".fondNoir").addEventListener("click", ()=>{this.shadow.querySelector(".fondNoir").classList.toggle("ouvrir")});
 		/*this.shadow.querySelector("nav>.plus").addEventListener("click", () => this.changeAnnee(1));
 		this.shadow.querySelector("nav>.moins").addEventListener("click", () => this.changeAnnee(-1));*/
 		this.shadow.querySelector("footer>.pdf").addEventListener("click", () => { 
@@ -335,9 +416,9 @@ class calCFAU extends HTMLElement {
 			window.print();
 		});
 		this.shadow.querySelector("footer>.studea").addEventListener("click", () => { this.exportXLSX() });
-		/*window.addEventListener("beforeunload", (event)=>{
-			 event.preventDefault();
-		});*/
+		window.addEventListener("beforeunload", (event)=>{
+			if(!this.saved) event.preventDefault();
+		});
 
 		/* Import fichier */
 		this.shadow.querySelector("#fileInput").addEventListener("change", async (event) => {
@@ -619,6 +700,7 @@ class calCFAU extends HTMLElement {
 	}
 
 	totaux() {
+		this.saved = false;
 		let entreprise = this.shadow.querySelectorAll(".jour>.entreprise").length;
 		let universite = this.shadow.querySelectorAll(".jour>.universite").length;
 		let examens = this.shadow.querySelectorAll(".jour>.examens").length;
@@ -654,6 +736,7 @@ class calCFAU extends HTMLElement {
 	}
 
 	exportXLSX(){
+		this.saved = true;
 		XlsxPopulate.fromBlankAsync()
             .then(workbook => {
 				const sheet = workbook.sheet(0);
