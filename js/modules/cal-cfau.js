@@ -373,13 +373,15 @@ class calCFAU extends HTMLElement {
 			<div class=fondNoir>
 				<div class=infos>
 					<h2>Quel est cet outil ?</h2>
-					<p>Cet outil permet de créer et enregistrer vos calendriers d'apprentissage. Vous pouvez créer plusieurs calendriers pour vos différentes formations et les enregistrer sur votre ordinateur au format xlsx.</p>
-					<p>Nous vous recommandons de ne pas modifier le fichier xlsx sans passer par cet outil afin de ne pas corrompre les données.</p>
+					<p>Cet outil permet de créer et d'enregistrer vos calendriers d'apprentissage. <br>Vous pouvez créer plusieurs calendriers pour vos différentes formations et les enregistrer sur votre ordinateur au format Excel (xlsx).</p>
+					<p>Nous vous recommandons de ne pas modifier le fichier Excel sans passer par cet outil afin de ne pas corrompre les données.</p>
 
 					<h2>Etapes</h2>
 					<p>
 						<ul>
-							<li>Après avoir crée un nouveau calendrier, modifier le nom de la formation en haut de l'interface.</li>
+							<li>Commencez par créer un nouveau calendrier en indiquant les dates de début et de fin de la formation.</li>
+							<li>(Les dates de début et de fin ne peuvent pas être modifiées une fois le calendrier créé.)</li>
+							<li>Modifiez le nom de la formation en haut de l'interface.</li>
 							<li>Cliquez sur le texte d'un jour pour modifier toute la journée.</li>
 							<li>Cliquez juste à coté pour modifier une demi journée.</li>
 							<li>Utilisez le symbole <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg><svg xmlns="http://www.w3.org/2000/svg" title=Copier class=copy width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> pour copier la semaine entière, vous pourrez la coller ailleurs.</li>
@@ -686,7 +688,7 @@ class calCFAU extends HTMLElement {
 		let selected = this.shadow.querySelectorAll(".select");
 		let current = event.currentTarget.closest(".jour");
 		for(let i=0;i<6;i++) {
-			if(!current.classList.contains("ferie")) {
+			if(!current.classList.contains("ferie") && !current.classList.contains("desactive")) {
 				current.querySelector(".matin").className = Array.from(selected)[i].querySelector(".matin").className;
 				current.querySelector(".apresmidi").className = Array.from(selected)[i].querySelector(".apresmidi").className;
 			}
